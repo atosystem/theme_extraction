@@ -8,6 +8,21 @@ import copy
 
 import motif_labeling as motif_labeling
 
+import argparse
+
+parser = argparse.ArgumentParser(
+    description="""Theme Extraction\nThis program extract polymophic themes from polymophic full compositions via altered LCS algorithm.\nThe extraction result is saved in pkl file and can also output to midi file for visulization.""")
+
+parser.add_argument('--theme',help="theme midi file path",default="./sample_data/theme/MTD0827_Beethoven_Op007-01.mid")
+parser.add_argument('--comp',help="full composition midi file path",default="./sample_data/full_composition/Beethoven_Op007-01.mid")
+parser.add_argument('--result',help="theme extraction result file path (.pkl)")
+parser.add_argument('--midi',help="theme extraction result midi file path")
+parser.add_argument('-v', '--verbose',help="set verbose",action='store_true')
+
+
+args = parser.parse_args()
+# exit()
+
 
 def proc_one(theme_file, comp_file, param_exps, verbose=False):
     midi_obj_theme = mid_parser.MidiFile(theme_file)
@@ -154,15 +169,19 @@ if __name__ == "__main__":
     }
 
     # execute the extraction process
-    result = proc_one(theme_file="./sample_data/theme/MTD0827_Beethoven_Op007-01.mid",
-                      comp_file="./sample_data/full_composition/Beethoven_Op007-01.mid",
+    result = proc_one(theme_file=args.theme,
+                      comp_file=args.comp,
                       param_exps=param_exps,
-                      verbose=True)
+                      verbose=args.v)
     # show the results
     print(result)
+    if args.result:
+        with open(args.result,'wb') as f:
+            pickle.dump(result,f)
 
-    # output the result to midi file
-    output_midi(theme_file="./sample_data/theme/MTD0827_Beethoven_Op007-01.mid",
-                comp_file="./sample_data/full_composition/Beethoven_Op007-01.mid",
-                output_fn="extraction_result.mid",
-                coverage_result=result["exp_default"])
+    if args.midi:
+        # output the result to midi file
+        output_midi(theme_file=args.theme,
+                    comp_file=args.comp,
+                    output_fn=args.midi,
+                    coverage_result=result["exp_default"])
