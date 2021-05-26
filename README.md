@@ -1,5 +1,5 @@
 # Theme Extraction
-a tool for extraction musical theme
+A tool for extraction musical theme
 ## Preparation
 ```
 pip install -r requirements.txt
